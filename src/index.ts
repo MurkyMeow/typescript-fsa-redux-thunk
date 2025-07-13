@@ -68,10 +68,7 @@ type SmartThunkFunction<State, InputType, ReturnType, Error, Extra> =
  * And returns object with the async actions and the thunk itself
  */
 export const asyncFactory =
-  <State = DefaultRootState, Extra = unknown>(
-    factory: ActionCreatorFactory,
-    resolve: () => Promise<void> = Promise.resolve.bind(Promise),
-  ) =>
+  <State = DefaultRootState, Extra = unknown>(factory: ActionCreatorFactory) =>
   <InputType, ReturnType, Error = unknown>(
     type: string,
     worker: AsyncWorker<InputType, ThunkReturnType<ReturnType>, State, Extra>,
@@ -88,13 +85,20 @@ export const asyncFactory =
       type,
       commonMeta,
     );
-    const fn: Procedure = (params) => (dispatch, getState, extraArgument) =>
-      resolve()
-        .then(() => {
-          dispatch(async.started(params));
-        })
-        .then(() => worker(params, dispatch, getState, extraArgument))
-        .then(
+    const fn: Procedure = (params) => (dispatch, getState, extraArgument) => {
+      dispatch(async.started(params));
+
+      let ret;
+
+      try {
+        ret = worker(params, dispatch, getState, extraArgument);
+      } catch (error) {
+        dispatch(async.failed({ params, error: error as Error }));
+        throw error;
+      }
+
+      if (ret instanceof Promise) {
+        return ret.then(
           (result) => {
             dispatch(async.done({ params, result }));
             return result;
@@ -104,6 +108,12 @@ export const asyncFactory =
             throw error;
           },
         );
+      }
+
+      dispatch(async.done({ params, result: ret }));
+
+      return Promise.resolve(ret);
+    };
     fn.action = (params) => fn(params);
     fn.async = async;
     return fn as unknown as SmartThunkFunction<
