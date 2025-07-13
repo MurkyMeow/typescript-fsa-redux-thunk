@@ -1,5 +1,5 @@
 {
-  "name": "typescript-fsa-redux-thunk",
+  "name": "@meow-laika/typescript-fsa-redux-thunk",
   "version": "2.10.2",
   "description": "TypeScript FSA utilities for redux-thunk",
   "keywords": [
@@ -12,7 +12,7 @@
     "typescript",
     "typescript-fsa"
   ],
-  "repository": "https://github.com/xdave/typescript-fsa-redux-thunk",
+  "repository": "https://github.com/MurkyMeow/typescript-fsa-redux-thunk",
   "license": "MIT",
   "author": "Dave Gradwell <deft.productions@gmail.com>",
   "main": "lib/index.js",
