@@ -1,6 +1,6 @@
 {
   "name": "@meow-laika/typescript-fsa-redux-thunk",
-  "version": "2.10.2",
+  "version": "2.11.0",
   "description": "TypeScript FSA utilities for redux-thunk",
   "keywords": [
     "action",
